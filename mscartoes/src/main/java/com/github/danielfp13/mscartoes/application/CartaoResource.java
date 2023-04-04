@@ -44,7 +44,7 @@ public class CartaoResource {
     public ResponseEntity<List<CartoesPorClienteResponse>>getCartoesByClientes(@RequestParam String cpf){
         List<ClienteCartao> list =  clienteCartaoService.findCartoesByCpf(cpf);
         List<CartoesPorClienteResponse> resultList = list.stream().map(CartoesPorClienteResponse::fromModel)
-                .collect(Collectors.toList());        
+                .collect(Collectors.toList());
         return ResponseEntity.ok(resultList);
     }
 }

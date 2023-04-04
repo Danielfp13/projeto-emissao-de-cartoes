@@ -8,6 +8,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Repository
-public interface CartaoReository extends JpaRepository<Cartao, Long> {
+public interface CartaoRepository extends JpaRepository<Cartao, Long> {
     List<Cartao> findByRendaLessThanEqual(BigDecimal rendaBigDecimal);
 }

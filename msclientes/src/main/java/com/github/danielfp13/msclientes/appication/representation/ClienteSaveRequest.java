@@ -16,7 +16,7 @@ public class ClienteSaveRequest {
     private String nome;
     private Integer idade;
 
-    public Cliente toModel(){
-       return new Cliente(cpf, nome, idade) ;
+    public Cliente toModel() {
+        return new Cliente(cpf, nome, idade);
     }
 }

@@ -4,6 +4,8 @@ import com.github.danielfp13.msclientes.appication.representation.ClienteSaveReq
 import com.github.danielfp13.msclientes.domain.Cliente;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -16,16 +18,17 @@ import java.net.URI;
 @Slf4j
 public class ClienteResource {
 
+
     private ClienteService clienteService;
 
     @GetMapping("/ok")
-    public String status(){
+    public String status() {
         log.info("obtendo status do microservices declarantes");
         return "ok";
     }
 
     @PostMapping
-    public ResponseEntity<Cliente>save(@RequestBody ClienteSaveRequest request){
+    public ResponseEntity<Cliente> save(@RequestBody ClienteSaveRequest request) {
         var cliente = request.toModel();
         cliente = clienteService.save(cliente);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().
@@ -34,9 +37,9 @@ public class ClienteResource {
     }
 
     @GetMapping
-    public ResponseEntity findCliente(@RequestParam String cpf){
+    public ResponseEntity findCliente(@RequestParam String cpf) {
         var cliente = clienteService.getByCpf(cpf);
-        if(cliente.isEmpty()){
+        if (cliente.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(cliente);
