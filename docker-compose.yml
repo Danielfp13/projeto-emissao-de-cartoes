@@ -20,7 +20,7 @@ services:
     networks:
       - cursoms-network      
   cursoms-eureka:
-    image: daniel1389/eureka:1.0
+    image: daniel1389/cursoms-eureka:1.0
     ports:
       - 8761:8761
     restart: always
