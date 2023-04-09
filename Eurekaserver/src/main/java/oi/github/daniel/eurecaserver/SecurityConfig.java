@@ -18,7 +18,6 @@ public class SecurityConfig {
                 .authenticated()
                 .and()
                 .httpBasic()
-
                 .and()
                 .formLogin()
         ;

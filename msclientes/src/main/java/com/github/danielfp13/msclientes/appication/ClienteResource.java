@@ -17,8 +17,6 @@ import java.net.URI;
 @RequestMapping("clientes")
 @Slf4j
 public class ClienteResource {
-
-
     private ClienteService clienteService;
 
     @GetMapping("/ok")

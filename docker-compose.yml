@@ -1,0 +1,96 @@
+version: '3.4'
+
+services:
+  cursoms-rabbit-mq:
+    image: rabbitmq:3.9-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - cursoms-network
+  cursoms-keycloak:
+    image: quay.io/keycloak/keycloak:18.0.0
+    restart: always
+    command: start-dev
+    ports:
+      - 8081:8080
+    environment:
+      KEYCLOAK_ADMIN: admin 
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    networks:
+      - cursoms-network      
+  cursoms-eureka:
+    image: daniel1389/eureka:1.0
+    ports:
+      - 8761:8761
+    restart: always
+    build:
+      context: .
+      dockerfile: Eurekaserver/Dockerfile 
+    networks:
+      - cursoms-network
+  cursoms-gateway:
+    image: daniel1389/cursoms-gateway:1.0
+    ports:
+      - 8080:8080
+    restart: always
+    build:
+      context: .
+      dockerfile: mscloudgateway/Dockerfile   
+    depends_on:
+      - cursoms-eureka
+      - cursoms-keycloak
+    environment:
+      KEYCLOAK_SERVER: cursoms-keycloak
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://user:1234@cursoms-eureka:8761/eureka
+      SPRING.SECURITY.OAUTH2.RESOURCESERVER.JWT.ISSUER-URI: http://cursoms-keycloak:8080/realms/mscourserealm
+      EUREKA.INSTANCE.HOSTNAME: cursoms-gateway
+      KEYCLOAK_PORT: 8080
+    networks:
+      - cursoms-network
+  cursoms-clientes:
+    image: daniel1389/cursoms-clientes:1.0
+    restart: always
+    build:
+      context: .
+      dockerfile: msclientes/Dockerfile
+    depends_on:
+      - cursoms-eureka
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://user:1234@cursoms-eureka:8761/eureka
+      EUREKA.INSTANCE.HOSTNAME: cursoms-clientes
+    networks:
+      - cursoms-network
+  cursoms-cartoes:
+    image: daniel1389/cursoms-cartoes:1.0
+    restart: always
+    build:
+      context: .
+      dockerfile: mscartoes/Dockerfile
+    depends_on:
+      - cursoms-eureka
+      - cursoms-rabbit-mq
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://user:1234@cursoms-eureka:8761/eureka
+      EUREKA.INSTANCE.HOSTNAME: cursoms-cartoes
+      SPRING.RABBITMQ.HOST: cursoms-rabbit-mq 
+    networks:
+      - cursoms-network   
+  cursoms-avaliadorcredito:
+    image: daniel1389/cursoms-avaliadorcredito:1.0
+    restart: always
+    build:
+      context: .
+      dockerfile: msavaliadorcredito/Dockerfile
+    depends_on:
+      - cursoms-eureka
+      - cursoms-rabbit-mq
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://user:1234@cursoms-eureka:8761/eureka
+      EUREKA.INSTANCE.HOSTNAME: cursoms-avaliadorcredito
+      SPRING.RABBITMQ.HOST: cursoms-rabbit-mq 
+    networks:
+      - cursoms-network    
+networks:
+  cursoms-network:
+    driver: bridge
